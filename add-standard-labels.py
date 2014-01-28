@@ -1,7 +1,9 @@
+# vim: ts=4 :
 import getpass
 import json
 from restkit import Resource, BasicAuth, Connection, request
 from socketpool import ConnectionPool
+from urllib import quote_plus
 
 # Color sequence from ColorBrewer http://colorbrewer2.org/
 # Diverging 6 color BrBG scheme
@@ -69,6 +71,11 @@ for l in label_names:
 
 
 for dl,color in DEFAULT_LABELS:
+    print "dl is " + dl
+    print "urlencoding dl: "
+    dl = quote_plus(dl)
+    print dl
+     
     payload = {"name": dl, "color": color}
     headers = {'Content-Type' : 'application/json' }
     headers['Authorization'] = 'token %s' % token
@@ -87,6 +94,3 @@ for dl,color in DEFAULT_LABELS:
 	print "The plan is " + plan
         resource = Resource('https://api.github.com/repos/%s/labels/%s' % (repo, dl), pool=pool)
         response = resource.request('PATCH', payload=json.dumps(payload), headers=headers)
-
-
-
