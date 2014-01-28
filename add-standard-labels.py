@@ -54,7 +54,7 @@ token = json.loads(response.body_string())['token']
 #for more about the url structure
 
 resource = Resource('https://api.github.com/user/repos', pool=pool)
-resource = Resource('https://api.github.com/orgs/lillyoi/repos', pool=pool)
+resource = Resource('https://api.github.com/orgs/opentechinstitute/repos', pool=pool)
 
 resource = Resource('https://api.github.com/repos/%s/labels' % repo, pool=pool)
 headers = {'Content-Type' : 'application/json' }
