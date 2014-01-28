@@ -8,21 +8,21 @@ from socketpool import ConnectionPool
 
 DEFAULT_LABELS = (
                   ('0 - Backlog', 'CCCCCC'),
-                  ('1 - Ready', 'CCCCCC'),
-                  ('2 - Working', 'CCCCCC'),
-                  ('3 - Done', 'CCCCCC'),
+#                  ('1 - Ready', 'CCCCCC'),
+#                  ('2 - Working', 'CCCCCC'),
+#                  ('3 - Done', 'CCCCCC'),
                   ('2014planning', 'd4c5f9'),
-                  ('Needs Review', '009800'),
-                  ('Security', 'e11d21'),
-                  ('Upstream', 'f7c6c7'),
-                  ('Usability', 'eb6420'),
-                  ('bug', 'fc2929'),
-                  ('enhancement', '84b6eb'),
-                  ('Internationalization', 'fbca04'),
-                  ('duplicate', 'CCCCCC'),
-                  ('invalid', 'e6e6e6'),
-                  ('question', 'cc317c'),
-                  ('wontfix', 'ffffff'),
+#                  ('Needs Review', '009800'),
+#                  ('Security', 'e11d21'),
+#                  ('Upstream', 'f7c6c7'),
+#                  ('Usability', 'eb6420'),
+#                  ('bug', 'fc2929'),
+#                  ('enhancement', '84b6eb'),
+#                  ('Internationalization', 'fbca04'),
+#                  ('duplicate', 'CCCCCC'),
+#                  ('invalid', 'e6e6e6'),
+#                  ('question', 'cc317c'),
+#                  ('wontfix', 'ffffff'),
 		 )
 
 pool = ConnectionPool(factory=Connection)
@@ -63,10 +63,19 @@ response = resource.get(headers = headers)
 labels = json.loads(response.body_string())
 label_names = [n['name'] for n in labels]
 
+print "label_names: "
+for l in label_names:
+	print l
+
+
 for dl,color in DEFAULT_LABELS:
     payload = {"name": dl, "color": color}
     headers = {'Content-Type' : 'application/json' }
     headers['Authorization'] = 'token %s' % token
+
+    print "Payload is " 
+    for p in payload:
+	print p
 
     if dl not in label_names:
         print "Adding %s" % dl
@@ -74,6 +83,8 @@ for dl,color in DEFAULT_LABELS:
         response = resource.post(payload=json.dumps(payload), headers=headers)
     else:
         print "Updating colors for %s" % dl
+        plan = 'https://api.github.com/repos/%s/labels/%s' % (repo, dl)
+	print "The plan is " + plan
         resource = Resource('https://api.github.com/repos/%s/labels/%s' % (repo, dl), pool=pool)
         response = resource.request('PATCH', payload=json.dumps(payload), headers=headers)
 
