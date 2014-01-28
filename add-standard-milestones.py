@@ -49,7 +49,7 @@ headers = {'Content-Type' : 'application/json' }
 headers['Authorization'] = 'token %s' % token
 response = resource.get(headers = headers)
 milestones = json.loads(response.body_string())
-milestone_names = [n['title'] for n in milstones]
+milestone_names = [n['title'] for n in milestones]
 
 print "milestone_names: "
 for m in milestone_names:
