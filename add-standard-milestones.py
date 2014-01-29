@@ -4,9 +4,6 @@ import json
 from restkit import Resource, BasicAuth, Connection, request
 from socketpool import ConnectionPool
 
-# Color sequence from ColorBrewer http://colorbrewer2.org/
-# Diverging 6 color BrBG scheme
-
 DEFAULT_MILESTONES = (
 #			('title', 'open|closed', 'desc', 'YYYY-MM-DDTHH:MM:SSZ'),
 			('test-milestone', 'open', 'testing the script', '2014-01-28T00:00:00Z'),
@@ -17,7 +14,8 @@ pool = ConnectionPool(factory=Connection)
 serverurl="https://api.github.com"
 
 msg = "This script will create the default milestones %s in your specified " \
-      "repository if they do not yet exist." % (', '.join(lab[0] for lab in DEFAULT_MILESTONES))
+      "repository if they do not yet exist.\nThe script should update existing milestones" \
+      "but currently has trouble dealing with spaces in milestone fields (e.g., description)" % (', '.join(lab[0] for lab in DEFAULT_MILESTONES))
 print msg
 
 repo = raw_input("Repository: ")
@@ -51,13 +49,7 @@ response = resource.get(headers = headers)
 milestones = json.loads(response.body_string())
 milestone_names = [t['title'] for t in milestones]
 
-print "milestone_names: "
-for m in milestone_names:
-	print m
-
-
 for dm,state,desc,due in DEFAULT_MILESTONES:
-    print "dm is " + dm
      
     payload = {"title": dm, "state": state, "description": desc, "due_on": due}
     headers = {'Content-Type' : 'application/x-www-form-urlencoded' }
@@ -71,6 +63,5 @@ for dm,state,desc,due in DEFAULT_MILESTONES:
     else:
         print "Updating parameters for for %s" % dm
         plan = 'https://api.github.com/repos/%s/milestones/%s' % (repo, dm)
-	print "The plan is " + plan
         resource = Resource('https://api.github.com/repos/%s/milestones/%s' % (repo, dm), pool=pool)
         response = resource.request('PATCH', payload=json.dumps(payload), headers=headers)
