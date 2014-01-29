@@ -10,7 +10,7 @@ from socketpool import ConnectionPool
 DEFAULT_MILESTONES = (
 #			('title', 'open|closed', 'desc', 'YYYY-MM-DDTHH:MM:SSZ'),
 			('test-milestone', 'open', 'testing the script', '2014-01-28T00:00:00Z'),
-			('no-due-date', 'open', 'testing the script', ''),
+			('no-due-date', 'open', 'testing the script', '2014-01-28T00:00:00Z'),
 		     )
 
 pool = ConnectionPool(factory=Connection)
@@ -49,7 +49,7 @@ headers = {'Content-Type' : 'application/json' }
 headers['Authorization'] = 'token %s' % token
 response = resource.get(headers = headers)
 milestones = json.loads(response.body_string())
-milestone_names = [n['title'] for n in milestones]
+milestone_names = [t['title'] for t in milestones]
 
 print "milestone_names: "
 for m in milestone_names:
@@ -66,11 +66,11 @@ for dm,state,desc,due in DEFAULT_MILESTONES:
 
     if dm not in milestone_names:
         print "Adding %s" % dm
-        resource = Resource('https://api.github.com/repos/%s/labels' % repo, pool=pool)
+        resource = Resource('https://api.github.com/repos/%s/milestones' % repo, pool=pool)
         response = resource.post(payload=json.dumps(payload), headers=headers)
     else:
-        print "Updating colors for %s" % dm
-        plan = 'https://api.github.com/repos/%s/labels/%s' % (repo, dm)
+        print "Updating parameters for for %s" % dm
+        plan = 'https://api.github.com/repos/%s/milestones/%s' % (repo, dm)
 	print "The plan is " + plan
-        resource = Resource('https://api.github.com/repos/%s/labels/%s' % (repo, dm), pool=pool)
+        resource = Resource('https://api.github.com/repos/%s/milestones/%s' % (repo, dm), pool=pool)
         response = resource.request('PATCH', payload=json.dumps(payload), headers=headers)
