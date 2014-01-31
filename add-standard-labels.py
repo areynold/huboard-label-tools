@@ -3,28 +3,29 @@ import getpass
 import json
 from restkit import Resource, BasicAuth, Connection, request
 from socketpool import ConnectionPool
-from urllib import quote_plus
+from urllib import quote
 
 # Color sequence from ColorBrewer http://colorbrewer2.org/
 # Diverging 6 color BrBG scheme
 
 DEFAULT_LABELS = (
                   ('0 - Backlog', 'CCCCCC'),
-#                  ('1 - Ready', 'CCCCCC'),
-#                  ('2 - Working', 'CCCCCC'),
-#                  ('3 - Done', 'CCCCCC'),
+                  ('1 - Ready', 'CCCCCC'),
+                  ('2 - Working', 'CCCCCC'),
+                  ('3 - Done', 'CCCCCC'),
                   ('2014planning', 'd4c5f9'),
-#                  ('Needs Review', '009800'),
-#                  ('Security', 'e11d21'),
-#                  ('Upstream', 'f7c6c7'),
-#                  ('Usability', 'eb6420'),
-#                  ('bug', 'fc2929'),
-#                  ('enhancement', '84b6eb'),
-#                  ('Internationalization', 'fbca04'),
-#                  ('duplicate', 'CCCCCC'),
-#                  ('invalid', 'e6e6e6'),
-#                  ('question', 'cc317c'),
-#                  ('wontfix', 'ffffff'),
+                  ('Needs Review', '009800'),
+                  ('Security', 'e11d21'),
+                  ('Upstream', 'f7c6c7'),
+                  ('Usability', 'eb6420'),
+                  ('bug', 'fc2929'),
+                  ('enhancement', '84b6eb'),
+                  ('Internationalization', 'fbca04'),
+                  ('Research', 'bfe5bf'),
+                  ('duplicate', 'CCCCCC'),
+                  ('invalid', 'e6e6e6'),
+                  ('question', 'cc317c'),
+                  ('wontfix', 'ffffff'),
 		 )
 
 pool = ConnectionPool(factory=Connection)
@@ -72,9 +73,6 @@ for l in label_names:
 
 for dl,color in DEFAULT_LABELS:
     print "dl is " + dl
-    print "urlencoding dl: "
-    dl = quote_plus(dl)
-    print dl
      
     payload = {"name": dl, "color": color}
     headers = {'Content-Type' : 'application/json' }
@@ -90,7 +88,7 @@ for dl,color in DEFAULT_LABELS:
         response = resource.post(payload=json.dumps(payload), headers=headers)
     else:
         print "Updating colors for %s" % dl
-        plan = 'https://api.github.com/repos/%s/labels/%s' % (repo, dl)
+        plan = 'https://api.github.com/repos/%s/labels/%s' % (repo, quote(dl))
 	print "The plan is " + plan
-        resource = Resource('https://api.github.com/repos/%s/labels/%s' % (repo, dl), pool=pool)
+        resource = Resource('https://api.github.com/repos/%s/labels/%s' % (repo, quote(dl)), pool=pool)
         response = resource.request('PATCH', payload=json.dumps(payload), headers=headers)
