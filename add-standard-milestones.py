@@ -1,3 +1,4 @@
+# vim: ts=4 :
 import getpass
 import json
 from restkit import Resource, BasicAuth, Connection, request
@@ -11,8 +12,9 @@ pool = ConnectionPool(factory=Connection)
 serverurl="https://api.github.com"
 
 msg = "This script will create the default milestones %s in your specified " \
-      "repository if they do not yet exist.\nThe script should update existing milestones" \
-      "but currently has trouble dealing with spaces in milestone fields (e.g., description)" % (', '.join(lab[0] for lab in DEFAULT_MILESTONES))
+      "repository if they do not yet exist.\n" \
+      "The script will update existing milestones.\n" \
+      "It does not handle empty optional fields (e.g., Description) well." % (', '.join(lab[0] for lab in DEFAULT_MILESTONES))
 print msg
 
 repo = raw_input("Repository: ")
@@ -31,10 +33,10 @@ response = resource.post(headers={ "Content-Type": "application/json" },
 token = json.loads(response.body_string())['token']
 
 
-#Once you have a token, you can pass that in the Authorization header
-#You can store this in a cache and throw away the user/password
-#This is just an example query.  See http://developer.github.com/v3/
-#for more about the url structure
+# Once you have a token, you can pass that in the Authorization header
+# You can store this in a cache and throw away the user/password
+# This is just an example query.  See http://developer.github.com/v3/
+# for more about the url structure
 
 resource = Resource('https://api.github.com/user/repos', pool=pool)
 resource = Resource('https://api.github.com/orgs/lillyoi/repos', pool=pool)
@@ -61,3 +63,4 @@ for dm,state,desc,due in DEFAULT_MILESTONES:
         print "Updating parameters for for %s" % dm
         resource = Resource('https://api.github.com/repos/%s/milestones/%s' % (repo, milestone_names[dm]), pool=pool)
         response = resource.request('PATCH', payload=json.dumps(payload), headers=headers)
+
